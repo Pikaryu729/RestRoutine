@@ -1,0 +1,368 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		A6CC88FB05079CCEF9D55898 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E0FFC9646D4919D928DCFFBD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EA2E4CCA207741E0308C942;
+			remoteInfo = RestRoutine;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		036DDD1D73F17A02C9924D9A /* RestRoutine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RestRoutine.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5951A23F9948E92FB150FB7C /* RestRoutineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestRoutineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DAA8C0CD882C3FB54C73BD78 /* RestRoutine */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RestRoutine;
+			sourceTree = "<group>";
+		};
+		FD7277EEA09DF39B11005766 /* RestRoutineTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RestRoutineTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		620982B826F1CE5FEE1AA810 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7CF3F6863FEF8165BA93432 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		048FD8D1F5B7A77063C4A10E = {
+			isa = PBXGroup;
+			children = (
+				DAA8C0CD882C3FB54C73BD78 /* RestRoutine */,
+				FD7277EEA09DF39B11005766 /* RestRoutineTests */,
+				D4C7C4523D045148CB8514CE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D4C7C4523D045148CB8514CE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				036DDD1D73F17A02C9924D9A /* RestRoutine.app */,
+				5951A23F9948E92FB150FB7C /* RestRoutineTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9EA2E4CCA207741E0308C942 /* RestRoutine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D4C2B29F0529FF6FDCE6975 /* Build configuration list for PBXNativeTarget "RestRoutine" */;
+			buildPhases = (
+				72D4320D3A559E0ABDA74E5D /* Sources */,
+				620982B826F1CE5FEE1AA810 /* Frameworks */,
+				EE0E123D4B8C554EB19C0484 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DAA8C0CD882C3FB54C73BD78 /* RestRoutine */,
+			);
+			name = RestRoutine;
+			packageProductDependencies = (
+			);
+			productName = RestRoutine;
+			productReference = 036DDD1D73F17A02C9924D9A /* RestRoutine.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B6600D49149BF847368F0C47 /* RestRoutineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9E97BC5F60FABBD95BAD098 /* Build configuration list for PBXNativeTarget "RestRoutineTests" */;
+			buildPhases = (
+				2BF5A8C7709B926AD4BCC2EB /* Sources */,
+				E7CF3F6863FEF8165BA93432 /* Frameworks */,
+				BC9EC636351B1C9B111ACB27 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA5E5FB96F6FDC6AD3F8DE07 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FD7277EEA09DF39B11005766 /* RestRoutineTests */,
+			);
+			name = RestRoutineTests;
+			packageProductDependencies = (
+			);
+			productName = RestRoutineTests;
+			productReference = 5951A23F9948E92FB150FB7C /* RestRoutineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E0FFC9646D4919D928DCFFBD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					9EA2E4CCA207741E0308C942 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					B6600D49149BF847368F0C47 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 9EA2E4CCA207741E0308C942;
+					};
+				};
+			};
+			buildConfigurationList = 8F50FE3688BFA100A7543746 /* Build configuration list for PBXProject "RestRoutine" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 048FD8D1F5B7A77063C4A10E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D4C7C4523D045148CB8514CE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9EA2E4CCA207741E0308C942 /* RestRoutine */,
+				B6600D49149BF847368F0C47 /* RestRoutineTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EE0E123D4B8C554EB19C0484 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC9EC636351B1C9B111ACB27 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		72D4320D3A559E0ABDA74E5D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BF5A8C7709B926AD4BCC2EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA5E5FB96F6FDC6AD3F8DE07 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EA2E4CCA207741E0308C942 /* RestRoutine */;
+			targetProxy = A6CC88FB05079CCEF9D55898 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CD4E50B35B26CA4B3F0454C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AD4AB02040FFAD9E9482B809 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C488BA149A9445A34C27A7DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = RestRoutine.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rest & Routine";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.RestRoutine;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AE069A6098462667E699ED84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = RestRoutine.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rest & Routine";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.RestRoutine;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		1DDC447DCDD443A5FA38EAE8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.RestRoutineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RestRoutine.app/Contents/MacOS/RestRoutine";
+			};
+			name = Debug;
+		};
+		E0747E39B4155E8AD872940C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.RestRoutineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RestRoutine.app/Contents/MacOS/RestRoutine";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8F50FE3688BFA100A7543746 /* Build configuration list for PBXProject "RestRoutine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD4E50B35B26CA4B3F0454C9 /* Debug */,
+				AD4AB02040FFAD9E9482B809 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D4C2B29F0529FF6FDCE6975 /* Build configuration list for PBXNativeTarget "RestRoutine" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C488BA149A9445A34C27A7DA /* Debug */,
+				AE069A6098462667E699ED84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F9E97BC5F60FABBD95BAD098 /* Build configuration list for PBXNativeTarget "RestRoutineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DDC447DCDD443A5FA38EAE8 /* Debug */,
+				E0747E39B4155E8AD872940C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E0FFC9646D4919D928DCFFBD /* Project object */;
+}

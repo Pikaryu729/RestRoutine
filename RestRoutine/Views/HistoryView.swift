@@ -5,6 +5,7 @@ struct HistoryView: View {
     @Query(sort: \SleepEntry.end, order: .reverse) private var sleep: [SleepEntry]
     @Query private var habitDays: [HabitDay]
     @AppStorage(PreferenceKey.waterUnit) private var waterUnitRaw = WaterUnit.milliliters.rawValue
+    @Environment(\.theme) private var theme
     @State private var path: [DayKey] = []
     @State private var pickedDate = Date.now
 
@@ -22,43 +23,62 @@ struct HistoryView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            List {
-                Section {
-                    ForEach(dates) { day in
-                        NavigationLink(value: day) {
-                            HistoryRow(
-                                day: day,
-                                entry: sleep.first { $0.wakeDateKey == day.rawValue },
-                                habits: habitDays.first { $0.dateKey == day.rawValue },
-                                unit: unit)
+            ScrollView {
+                VStack(alignment: .leading, spacing: theme.spacing + 6) {
+                    ScreenHeader(title: "History", subtitle: "Recent dates, including unlogged days") {
+                        HStack(spacing: 8) {
+                            DatePicker("Open date", selection: $pickedDate, in: ...Date.now, displayedComponents: .date)
+                                .labelsHidden()
+                                .help("Choose any date to open")
+                            Button("Open") { path = [DayKey(date: pickedDate)] }
+                                .buttonStyle(.themed())
+                                .help("Open the chosen date")
                         }
                     }
-                } header: {
-                    HStack {
-                        Text("Date")
-                        Spacer()
-                        Text("Sleep · habits")
+
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Text("Date")
+                            Spacer()
+                            Text("Sleep · habits")
+                        }
+                        .font(theme.kicker)
+                        .tracking(0.9)
+                        .textCase(.uppercase)
+                        .foregroundStyle(theme.muted)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 10)
+                        .background(theme.tint)
+
+                        ForEach(dates) { day in
+                            ThemeRule()
+                            NavigationLink(value: day) {
+                                HistoryRow(
+                                    day: day,
+                                    entry: sleep.first { $0.wakeDateKey == day.rawValue },
+                                    habits: habitDays.first { $0.dateKey == day.rawValue },
+                                    unit: unit)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
+                    .clipShape(RoundedRectangle(cornerRadius: theme.cornerRadius, style: .continuous))
+                    .themePanel()
                 }
+                .padding(theme.screenPadding)
             }
+            .background(theme.background)
             .navigationTitle("History")
+            .hidesToolbarTitle()
             .navigationDestination(for: DayKey.self) { day in
                 DateDetailView(day: day)
-            }
-            .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
-                    DatePicker("Open date", selection: $pickedDate, in: ...Date.now, displayedComponents: .date)
-                        .labelsHidden()
-                        .help("Choose any date to open")
-                    Button("Open") { path = [DayKey(date: pickedDate)] }
-                        .help("Open the chosen date")
-                }
             }
         }
     }
 }
 
 struct HistoryRow: View {
+    @Environment(\.theme) private var theme
     let day: DayKey
     let entry: SleepEntry?
     let habits: HabitDay?
@@ -80,20 +100,33 @@ struct HistoryRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(day.mediumLabel).frame(width: 110, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(sleepText).foregroundStyle(entry == nil ? .secondary : .primary)
-                Text(habitsText).font(.caption).foregroundStyle(.secondary)
+        HStack(alignment: .firstTextBaseline, spacing: 14) {
+            Text(day.mediumLabel)
+                .font(theme.heading(15))
+                .foregroundStyle(theme.ink)
+                .frame(width: 110, alignment: .leading)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(sleepText)
+                    .font(theme.value.weight(.semibold))
+                    .foregroundStyle(entry == nil ? theme.muted : theme.ink)
+                Text(habitsText).font(.caption).foregroundStyle(theme.muted)
             }
+            Spacer(minLength: 8)
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(theme.muted)
+                .accessibilityHidden(true)
         }
-        .padding(.vertical, 2)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
 }
 
 struct DateDetailView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.theme) private var theme
     @Query private var sleep: [SleepEntry]
     @Query private var habitDays: [HabitDay]
     @AppStorage(PreferenceKey.waterUnit) private var waterUnitRaw = WaterUnit.milliliters.rawValue
@@ -118,43 +151,62 @@ struct DateDetailView: View {
     private var store: JournalStore { JournalStore(context: context) }
 
     var body: some View {
-        Form {
-            Section("Sleep (woke this date)") {
-                if let entry {
-                    LabeledContent("In bed", value: Display.timeRange(entry))
-                    LabeledContent("Time in bed", value: DurationText.format(entry.timeInBed))
-                    LabeledContent("Estimated sleep", value: entry.estimatedSleep.map(DurationText.format) ?? "Unavailable")
-                    LabeledContent("Awake", value: entry.awakeMinutes.map { "\($0) min" } ?? "Not entered")
-                    LabeledContent("Quality", value: Display.quality(entry.quality))
-                    LabeledContent("Source", value: entry.sourceLabel)
-                    LabeledContent("Note", value: entry.note ?? "None")
+        ScrollView {
+            VStack(alignment: .leading, spacing: theme.spacing) {
+                ScreenHeader(title: day.longLabel, subtitle: "Sleep and habits for this date")
+                    .padding(.bottom, 6)
+
+                ThemePanel(title: "Sleep (woke this date)") {
+                    if let entry {
+                        ThemeLine("In bed", Display.timeRange(entry))
+                        ThemeLine("Time in bed", DurationText.format(entry.timeInBed))
+                        ThemeLine("Estimated sleep", entry.estimatedSleep.map(DurationText.format) ?? "Unavailable",
+                                  muted: entry.estimatedSleep == nil)
+                        ThemeLine("Awake", entry.awakeMinutes.map { "\($0) min" } ?? "Not entered",
+                                  muted: entry.awakeMinutes == nil)
+                        ThemeLine("Quality", Display.quality(entry.quality), muted: entry.quality == nil)
+                        ThemeLine("Source", entry.sourceLabel)
+                        ThemeLine("Note", entry.note ?? "None", muted: entry.note == nil)
+                        HStack {
+                            Button("Edit sleep") { sleepSheet = .edit(entry.id) }
+                                .buttonStyle(.themed())
+                            Button("Delete sleep…", role: .destructive) { confirmDeleteSleep = true }
+                                .buttonStyle(.themed(.destructive))
+                        }
+                        .padding(.top, 10)
+                    } else {
+                        ThemeLine("Sleep", "Not logged", muted: true)
+                        Button("Log sleep for this date") { sleepSheet = .new(day) }
+                            .buttonStyle(.themed())
+                            .padding(.top, 10)
+                    }
+                }
+                ThemePanel(title: "Habits") {
+                    ThemeLine("Water", Display.water(habits?.waterMilliliters, unit: unit),
+                              muted: habits?.waterMilliliters == nil)
+                    ThemeLine("Movement", Display.movement(habits?.movementMinutes),
+                              muted: habits?.movementMinutes == nil)
+                    ThemeLine("Wind-down", Display.windDown(habits?.windDown), muted: habits?.windDown == nil)
+                    ThemeLine("Note", habits?.note ?? "None", muted: habits?.note == nil)
                     HStack {
-                        Button("Edit sleep") { sleepSheet = .edit(entry.id) }
-                        Button("Delete sleep…", role: .destructive) { confirmDeleteSleep = true }
+                        Button(habits == nil ? "Log habits" : "Edit habits") { editingHabits = true }
+                            .buttonStyle(.themed())
+                        if habits != nil {
+                            Button("Delete habits…", role: .destructive) { confirmDeleteHabits = true }
+                                .buttonStyle(.themed(.destructive))
+                        }
                     }
-                } else {
-                    LabeledContent("Sleep", value: "Not logged")
-                    Button("Log sleep for this date") { sleepSheet = .new(day) }
+                    .padding(.top, 10)
+                }
+                if let errorMessage {
+                    Text(errorMessage).foregroundStyle(theme.danger)
                 }
             }
-            Section("Habits") {
-                LabeledContent("Water", value: Display.water(habits?.waterMilliliters, unit: unit))
-                LabeledContent("Movement", value: Display.movement(habits?.movementMinutes))
-                LabeledContent("Wind-down", value: Display.windDown(habits?.windDown))
-                LabeledContent("Note", value: habits?.note ?? "None")
-                HStack {
-                    Button(habits == nil ? "Log habits" : "Edit habits") { editingHabits = true }
-                    if habits != nil {
-                        Button("Delete habits…", role: .destructive) { confirmDeleteHabits = true }
-                    }
-                }
-            }
-            if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
-            }
+            .padding(theme.screenPadding)
         }
-        .formStyle(.grouped)
+        .background(theme.background)
         .navigationTitle(day.longLabel)
+        .hidesToolbarTitle()
         .sheet(item: $sleepSheet) { SleepEntrySheet(request: $0) }
         .sheet(isPresented: $editingHabits) { HabitEditorSheet(dateKey: day) }
         .confirmationDialog("Delete the sleep entry for \(day.longLabel)?", isPresented: $confirmDeleteSleep) {

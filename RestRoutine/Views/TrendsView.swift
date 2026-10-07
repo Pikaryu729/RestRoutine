@@ -13,6 +13,7 @@ struct TrendsView: View {
     @Query private var sleep: [SleepEntry]
     @Query private var habitDays: [HabitDay]
     @AppStorage(PreferenceKey.waterUnit) private var waterUnitRaw = WaterUnit.milliliters.rawValue
+    @Environment(\.theme) private var theme
     @State var range: TrendRange = .week
 
     var today: DayKey = .today()
@@ -23,31 +24,37 @@ struct TrendsView: View {
         let days = today.trailing(range.rawValue)
         let summaries = Trends.summaries(days: days, sleep: sleep, habits: habitDays)
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Picker("Range", selection: $range) {
-                    ForEach(TrendRange.allCases) { Text($0.label).tag($0) }
+            VStack(alignment: .leading, spacing: theme.spacing) {
+                ScreenHeader(title: "Trends", subtitle: "\(range.label) ending \(today.shortLabel)") {
+                    Picker("Range", selection: $range) {
+                        ForEach(TrendRange.allCases) { Text($0.label).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 200)
+                    .labelsHidden()
                 }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 240)
-                .labelsHidden()
 
                 Text("Days without an entry show as gaps. Averages use logged days only.")
                     .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.muted)
 
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 300), spacing: 16)], spacing: 16) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 300), spacing: theme.spacing, alignment: .top)],
+                          spacing: theme.spacing) {
                     ForEach(TrendMetric.allCases) { metric in
                         TrendCard(metric: metric, summary: summaries[metric]!, unit: unit, days: days)
                     }
                 }
             }
-            .padding(20)
+            .padding(theme.screenPadding)
         }
+        .background(theme.background)
         .navigationTitle("Trends")
+        .hidesToolbarTitle()
     }
 }
 
 struct TrendCard: View {
+    @Environment(\.theme) private var theme
     let metric: TrendMetric
     let summary: MetricSummary
     let unit: WaterUnit
@@ -100,47 +107,61 @@ struct TrendCard: View {
     }
 
     var body: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(averageText).font(.headline)
-                    Spacer()
-                    Text(summary.loggedText).font(.caption).foregroundStyle(.secondary)
-                }
+        ThemePanel {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(metric.title)
+                    .font(theme.heading(14))
+                    .foregroundStyle(theme.ink)
+                    .accessibilityAddTraits(.isHeader)
+                Text(averageText).font(theme.figure(20))
+                Text(summary.loggedText).font(.caption).foregroundStyle(theme.muted)
                 Chart {
                     ForEach(summary.points) { point in
                         if let value = point.value {
                             BarMark(
                                 x: .value("Date", point.day.rawValue),
                                 y: .value(yLabel, metric == .windDown ? 1 : plotted(value)))
-                            .foregroundStyle(metric == .windDown && value == 0 ? Color.secondary.opacity(0.4) : Color.accentColor)
+                            .foregroundStyle(metric == .windDown && value == 0 ? theme.muted.opacity(0.45) : theme.accent)
+                            .cornerRadius(theme.preset == .signal ? 1 : 3)
                         }
                     }
                 }
                 .chartXScale(domain: days.map(\.rawValue))
                 .chartXAxis {
+                    // Charts marks every date on this axis, so only the chosen
+                    // dates draw a label; 30 labels would overlap.
+                    let labeled = Set(axisDays)
                     AxisMarks(values: axisDays) { value in
-                        AxisGridLine()
-                        AxisValueLabel {
-                            if let raw = value.as(String.self), let day = DayKey(rawValue: raw) {
+                        if let raw = value.as(String.self), labeled.contains(raw), let day = DayKey(rawValue: raw) {
+                            AxisGridLine().foregroundStyle(theme.line)
+                            AxisValueLabel {
                                 Text(days.count > 7 ? day.shortLabel : day.startDate().formatted(.dateTime.weekday(.narrow)))
+                                    .foregroundStyle(theme.muted)
                             }
                         }
                     }
                 }
                 .chartYScale(domain: yDomain)
-                .chartYAxis(metric == .windDown ? .hidden : .automatic)
+                .chartYAxis {
+                    if metric != .windDown {
+                        AxisMarks { _ in
+                            AxisGridLine().foregroundStyle(theme.line)
+                            AxisValueLabel().foregroundStyle(theme.muted)
+                        }
+                    }
+                }
+                .chartYAxisLabel(position: .topLeading) {
+                    Text(yLabel).font(.caption).foregroundStyle(theme.muted)
+                }
                 .frame(height: 120)
+                .padding(.top, 8)
                 .accessibilityLabel("\(metric.title) chart")
                 .accessibilityValue("\(averageText). \(summary.loggedText).")
                 if metric == .windDown {
                     Text("Bars: done (accent) or not done (gray). Gaps are not logged.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(theme.muted)
                 }
             }
-            .padding(6)
-        } label: {
-            Text(metric.title)
         }
     }
 }

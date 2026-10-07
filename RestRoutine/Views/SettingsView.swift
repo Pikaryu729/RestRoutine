@@ -3,8 +3,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SettingsView: View {
+    var body: some View {
+        SettingsForm().themeRoot()
+    }
+}
+
+private struct SettingsForm: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var reminders: ReminderController
+    @Environment(\.theme) private var theme
     @AppStorage(PreferenceKey.waterUnit) private var waterUnitRaw = WaterUnit.milliliters.rawValue
 
     @State private var showBackupWarning = false
@@ -18,56 +25,58 @@ struct SettingsView: View {
     private var store: JournalStore { JournalStore(context: context) }
 
     var body: some View {
-        Form {
-            Section("Units") {
-                Picker("Water", selection: $waterUnitRaw) {
-                    ForEach(WaterUnit.allCases) { Text($0.label).tag($0.rawValue) }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                AppearanceSection()
+
+                ThemePanel(title: "Units") {
+                    SettingRow("Water") {
+                        Picker("Water", selection: $waterUnitRaw) {
+                            ForEach(WaterUnit.allCases) { Text($0.label).tag($0.rawValue) }
+                        }
+                    }
+                }
+
+                ThemePanel(title: "Reminders") {
+                    ForEach(ReminderKind.allCases) { kind in
+                        ReminderRow(kind: kind)
+                    }
+                    if let message = reminders.message {
+                        Label(message, systemImage: "bell.slash")
+                            .foregroundStyle(.orange)
+                            .font(.callout)
+                            .padding(.top, 6)
+                    }
+                    SettingFooter("Both reminders start off. Turning one on asks for permission to show notifications. Reminders show no health values, and macOS may not deliver them while your Mac is asleep, powered off or in a Focus.")
+                }
+
+                ThemePanel(title: "Backup and restore") {
+                    HStack {
+                        Button("Back Up Records…") { showBackupWarning = true }
+                            .buttonStyle(.themed())
+                        Button("Restore from Backup…") { showImporter = true }
+                            .buttonStyle(.themed())
+                    }
+                    SettingFooter("Your records stay on this Mac. A backup is a file you choose where to save; it is not encrypted. Restoring replaces all current records after you confirm.")
+                }
+
+                ThemePanel(title: "Privacy") {
+                    Button("Delete All Records…", role: .destructive) { confirmDeleteAll = true }
+                        .buttonStyle(.themed(.destructive))
+                    SettingFooter("Records are stored only in this app's private folder on your Mac, without separate encryption. Deleting removes them and turns off reminders; it does not touch backup files you saved elsewhere.")
+                }
+
+                if let statusMessage {
+                    Label(statusMessage, systemImage: "checkmark.circle").foregroundStyle(.green)
+                }
+                if let errorMessage {
+                    Label(errorMessage, systemImage: "exclamationmark.triangle").foregroundStyle(theme.danger)
                 }
             }
-
-            Section {
-                ForEach(ReminderKind.allCases) { kind in
-                    ReminderRow(kind: kind)
-                }
-                if let message = reminders.message {
-                    Label(message, systemImage: "bell.slash")
-                        .foregroundStyle(.orange)
-                        .font(.callout)
-                }
-            } header: {
-                Text("Reminders")
-            } footer: {
-                Text("Both reminders start off. Turning one on asks for permission to show notifications. Reminders show no health values, and macOS may not deliver them while your Mac is asleep, powered off or in a Focus.")
-                    .foregroundStyle(.secondary)
-            }
-
-            Section {
-                Button("Back Up Records…") { showBackupWarning = true }
-                Button("Restore from Backup…") { showImporter = true }
-            } header: {
-                Text("Backup and restore")
-            } footer: {
-                Text("Your records stay on this Mac. A backup is a file you choose where to save; it is not encrypted. Restoring replaces all current records after you confirm.")
-                    .foregroundStyle(.secondary)
-            }
-
-            Section {
-                Button("Delete All Records…", role: .destructive) { confirmDeleteAll = true }
-            } header: {
-                Text("Privacy")
-            } footer: {
-                Text("Records are stored only in this app's private folder on your Mac, without separate encryption. Deleting removes them and turns off reminders; it does not touch backup files you saved elsewhere.")
-                    .foregroundStyle(.secondary)
-            }
-
-            if let statusMessage {
-                Label(statusMessage, systemImage: "checkmark.circle").foregroundStyle(.green)
-            }
-            if let errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
-            }
+            .padding(20)
         }
-        .formStyle(.grouped)
+        .frame(minHeight: 420, idealHeight: 680)
+        .background(theme.background)
         .navigationTitle("Settings")
         .alert("Back up your records?", isPresented: $showBackupWarning) {
             Button("Choose Location…") { prepareBackup() }
@@ -155,6 +164,102 @@ struct SettingsView: View {
         } catch {
             errorMessage = "The records could not be deleted."
         }
+    }
+}
+
+/// Preset, appearance, accent and headings. Changes apply at once to every
+/// window and are kept on this Mac only, outside record backups.
+struct AppearanceSection: View {
+    @Environment(\.theme) private var theme
+    @AppStorage(PreferenceKey.themePreset) private var preset: String?
+    @AppStorage(PreferenceKey.themeAppearance) private var appearance: String?
+    @AppStorage(PreferenceKey.themeAccent) private var accent: String?
+    @AppStorage(PreferenceKey.themeHeadings) private var headings: String?
+
+    private var settings: ThemeSettings {
+        ThemeSettings(preset: preset, appearance: appearance, accent: accent, headings: headings)
+    }
+
+    private func save(_ new: ThemeSettings) {
+        preset = new.preset.rawValue
+        appearance = new.appearance.rawValue
+        accent = new.accent.rawValue
+        headings = new.headings.rawValue
+    }
+
+    private func binding<Value>(_ keyPath: WritableKeyPath<ThemeSettings, Value>) -> Binding<Value> {
+        Binding(get: { settings[keyPath: keyPath] }, set: { var s = settings; s[keyPath: keyPath] = $0; save(s) })
+    }
+
+    var body: some View {
+        ThemePanel(title: "Appearance") {
+            SettingRow("Preset") {
+                Picker("Preset", selection: Binding(get: { settings.preset },
+                                                    set: { var s = settings; s.choose($0); save(s) })) {
+                    ForEach(ThemePreset.allCases) { Text($0.title).tag($0) }
+                }
+            }
+            SettingRow("Appearance") {
+                Picker("Appearance", selection: binding(\.appearance)) {
+                    ForEach(AppearanceMode.allCases) { Text($0.title).tag($0) }
+                }
+            }
+            SettingRow("Accent") {
+                Picker("Accent", selection: binding(\.accent)) {
+                    ForEach(ThemeAccent.allCases) { Text($0.title).tag($0) }
+                }
+            }
+            SettingRow("Headings") {
+                Picker("Headings", selection: binding(\.headings)) {
+                    ForEach(HeadingStyle.allCases) { Text($0.title).tag($0) }
+                }
+            }
+            HStack {
+                Text("Changes apply immediately.").foregroundStyle(theme.muted)
+                Spacer()
+                Button("Reset appearance") { save(.initial) }
+                    .buttonStyle(.themed())
+                    .help("Return to Soft studio, Follow system, Ocean and rounded headings")
+            }
+            .padding(.top, 8)
+            SettingFooter("Choosing a preset also sets its accent and headings. Appearance stays as you chose it. Reset changes only the appearance, never your units, reminders or records.")
+        }
+    }
+}
+
+struct SettingRow<Control: View>: View {
+    let label: String
+    @ViewBuilder var control: Control
+
+    init(_ label: String, @ViewBuilder control: () -> Control) {
+        self.label = label
+        self.control = control()
+    }
+
+    var body: some View {
+        HStack {
+            Text(label)
+            Spacer(minLength: 16)
+            control
+                .labelsHidden()
+                .fixedSize()
+        }
+        .padding(.vertical, 3)
+    }
+}
+
+struct SettingFooter: View {
+    @Environment(\.theme) private var theme
+    let text: String
+
+    init(_ text: String) { self.text = text }
+
+    var body: some View {
+        Text(text)
+            .font(.caption)
+            .foregroundStyle(theme.muted)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.top, 10)
     }
 }
 

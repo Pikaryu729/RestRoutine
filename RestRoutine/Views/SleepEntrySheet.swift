@@ -16,6 +16,7 @@ enum SleepSheetRequest: Identifiable, Hashable {
 struct SleepEntrySheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.theme) private var theme
     let request: SleepSheetRequest
 
     @State private var draft: SleepDraft
@@ -50,46 +51,73 @@ struct SleepEntrySheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Form {
-                Section {
-                    DatePicker("Bedtime", selection: $draft.start, displayedComponents: [.date, .hourAndMinute])
-                    DatePicker("Wake time", selection: $draft.end, displayedComponents: [.date, .hourAndMinute])
-                    TextField("Awake minutes (optional)", text: $draft.awakeMinutesText, prompt: Text("Blank"))
-                    Picker("Quality (optional)", selection: $draft.quality) {
-                        Text("Not rated").tag(Int?.none)
-                        ForEach(1...5, id: \.self) { Text("\($0)").tag(Int?.some($0)) }
+            VStack(alignment: .leading, spacing: 16) {
+                Text(editingID == nil ? "Log sleep" : "Edit sleep")
+                    .font(theme.heading(22))
+                    .accessibilityAddTraits(.isHeader)
+                Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 10) {
+                    GridRow {
+                        EditorLabel("Bedtime")
+                        DatePicker("Bedtime", selection: $draft.start, displayedComponents: [.date, .hourAndMinute])
+                            .labelsHidden()
                     }
-                    TextField("Note (optional)", text: $draft.note, axis: .vertical)
-                        .lineLimit(2...4)
-                } footer: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if let validationMessage {
-                            Label(validationMessage, systemImage: "exclamationmark.triangle")
-                                .foregroundStyle(.red)
-                        } else {
-                            Text(calculationText)
-                        }
-                        Text("Wake date: \(DayKey(rawValue: draft.wakeDateKey)?.mediumLabel ?? draft.wakeDateKey)")
-                            .foregroundStyle(.secondary)
-                        if let saveError {
-                            Text(saveError).foregroundStyle(.red)
-                        }
+                    GridRow {
+                        EditorLabel("Wake time")
+                        DatePicker("Wake time", selection: $draft.end, displayedComponents: [.date, .hourAndMinute])
+                            .labelsHidden()
                     }
-                    .font(.callout)
+                    GridRow {
+                        EditorLabel("Awake minutes (optional)")
+                        TextField("Awake minutes (optional)", text: $draft.awakeMinutesText, prompt: Text("Blank"))
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    GridRow {
+                        EditorLabel("Quality (optional)")
+                        Picker("Quality (optional)", selection: $draft.quality) {
+                            Text("Not rated").tag(Int?.none)
+                            ForEach(1...5, id: \.self) { Text("\($0)").tag(Int?.some($0)) }
+                        }
+                        .labelsHidden()
+                        .fixedSize()
+                    }
+                    GridRow(alignment: .top) {
+                        EditorLabel("Note (optional)")
+                        TextField("Note (optional)", text: $draft.note, axis: .vertical)
+                            .lineLimit(2...4)
+                            .textFieldStyle(.roundedBorder)
+                    }
                 }
+                VStack(alignment: .leading, spacing: 4) {
+                    if let validationMessage {
+                        Label(validationMessage, systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(theme.danger)
+                    } else {
+                        Text(calculationText).font(theme.value)
+                    }
+                    Text("Wake date: \(DayKey(rawValue: draft.wakeDateKey)?.mediumLabel ?? draft.wakeDateKey)")
+                        .foregroundStyle(theme.muted)
+                    if let saveError {
+                        Text(saveError).foregroundStyle(theme.danger)
+                    }
+                }
+                .font(.callout)
             }
-            .formStyle(.grouped)
+            .padding(22)
 
+            ThemeRule()
             HStack {
                 Spacer()
                 Button("Cancel", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
+                    .buttonStyle(.themed())
                 Button("Save", action: save)
                     .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.themed(.primary))
                     .disabled(validationMessage != nil)
             }
-            .padding([.horizontal, .bottom], 20)
+            .padding(16)
         }
+        .background(theme.surface)
         .frame(width: 460)
         .navigationTitle(editingID == nil ? "Log sleep" : "Edit sleep")
         .onAppear(perform: loadIfEditing)
@@ -141,5 +169,20 @@ struct SleepEntrySheet: View {
         } catch {
             saveError = "The entry could not be saved."
         }
+    }
+}
+
+/// A field's label in the editor sheets.
+struct EditorLabel: View {
+    @Environment(\.theme) private var theme
+    let text: String
+
+    init(_ text: String) { self.text = text }
+
+    var body: some View {
+        Text(text)
+            .foregroundStyle(theme.ink)
+            .gridColumnAlignment(.trailing)
+            .accessibilityHidden(true)
     }
 }
